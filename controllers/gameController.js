@@ -17,9 +17,9 @@ const getAllGames = async (req, res) => {
 const createGame = async (req, res) => {
   try {
     // Desestruturação
-    const { title, platform, year, price } = req.body;
+    const { title, year, price, descriptions } = req.body;
     // Cadastrando no banco
-    await gameService.Create(title, platform, year, price);
+    await gameService.Create(title, year, price, descriptions);
     res.sendStatus(201); // Código 201 (CREATED)
   } catch (error) {
     console.log(error);
@@ -34,8 +34,8 @@ const deleteGame = async (req, res) => {
       const id = req.params.id;
       gameService.Delete(id);
       res.sendStatus(204); // Código 204 (NO CONTENT)
-    } else{
-      res.sendStatus(400) // Código 400 (BAD REQUEST)
+    } else {
+      res.sendStatus(400); // Código 400 (BAD REQUEST)
     }
   } catch (error) {
     console.log(error);
@@ -43,4 +43,42 @@ const deleteGame = async (req, res) => {
   }
 };
 
-export default { getAllGames, createGame, deleteGame };
+// Função para alterar um jogo
+const updateGame = async (req, res) => {
+  try {
+    if (ObjectId.isValid(req.params.id)) {
+      const id = req.params.id;
+      // Desestruturação
+      const { title, year, price, descriptions } = req.body;
+      gameService.Update(id, title, year, price, descriptions);
+      res.sendStatus(200); // Código 200 (OK)
+    } else {
+      res.sendStatus(400); // Código 400 (BAD REQUEST)
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+// Função para buscar um único jogo
+const getOneGame = async (req, res) => {
+  try {
+    if (ObjectId.isValid(req.params.id)) {
+      const id = req.params.id;
+      const game = await gameService.getOne(id);
+      if (!game) {
+        res.sendStatus(404); // Código 404 (NOT FOUND)
+      } else {
+        res.status(200).json({ game });
+      }
+    } else {
+      res.sendStatus(400) 
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500); // Erro interno do servidor
+  }
+};
+
+export default { getAllGames, createGame, deleteGame, updateGame, getOneGame };

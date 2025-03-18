@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 
+// Documento Aninhado
+const descriptionSchema = new mongoose.Schema({
+  genre: String,
+  platform: String,
+  rating: String,
+});
+
 const gameSchema = new mongoose.Schema({
   title: String,
-  platform: String,
   year: Number,
   price: Number,
+  descriptions: [descriptionSchema] // Array de objetos
 });
 
 // Aqui está sendo criado a coleção games no banco de dados
